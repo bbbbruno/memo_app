@@ -19,35 +19,37 @@ get '/new' do
 end
 
 post '/' do
-  data = { title: params[:title], content: params[:content], created_at: Time.now, filename: SecureRandom.hex(5) }
+  id = SecureRandom.hex(5)
+  id = SecureRandom.hex(5) if File.exist?("db/memo_#{id}")
+  data = { title: params[:title], content: params[:content], created_at: Time.now, id: id }
   @memo = Memo.new(data)
   @memo.save
   redirect '/'
   erb :index
 end
 
-get '/:filename' do |filename|
+get '/:id' do |id|
   @title = 'show'
-  @memo = Memo.find(filename)
+  @memo = Memo.find(id)
   erb :show
 end
 
-get '/:filename/edit' do |filename|
+get '/:id/edit' do |id|
   @title = 'edit'
-  @memo = Memo.find(filename)
+  @memo = Memo.find(id)
   erb :edit
 end
 
-put '/:filename' do |filename|
-  @memo = Memo.find(filename)
+put '/:id' do |id|
+  @memo = Memo.find(id)
   @memo.title = params[:title]
   @memo.content = params[:content]
   @memo.save
   erb :show
 end
 
-delete '/:filename' do |filename|
-  Memo.destroy(filename)
+delete '/:id' do |id|
+  Memo.destroy(id)
   redirect '/'
   erb :index
 end

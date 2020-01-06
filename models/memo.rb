@@ -4,13 +4,13 @@ require 'fileutils'
 require 'yaml'
 
 class Memo
-  attr_accessor :title, :content, :created_at, :filename
+  attr_accessor :title, :content, :created_at, :id
 
-  def initialize(title: '', content: '', created_at:, filename:)
+  def initialize(title: '', content: '', created_at:, id:)
     @title = title
     @content = content.gsub(/\R/, "\n")
     @created_at = created_at
-    @filename = filename
+    @id = id
   end
 
   class << self
@@ -23,18 +23,18 @@ class Memo
         retry
     end
 
-    def find(filename)
-      data = File.open("db/#{filename}.yml") { |f| YAML.load(f) }
+    def find(id)
+      data = File.open("db/memo_#{id}.yml") { |f| YAML.load(f) }
       self.new(data)
     end
 
-    def destroy(filename)
-      FileUtils.rm("db/#{filename}.yml")
+    def destroy(id)
+      FileUtils.rm("db/memo_#{id}.yml")
     end
   end
 
   def save
-    data = { title: title, content: content, created_at: created_at, filename: filename }
-    YAML.dump(data, File.open("db/#{filename}.yml", 'w'))
+    data = { title: title, content: content, created_at: created_at, id: id }
+    YAML.dump(data, File.open("db/memo_#{id}.yml", 'w'))
   end
 end
